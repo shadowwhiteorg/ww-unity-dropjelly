@@ -25,11 +25,6 @@ namespace ww.DropJelly
         public List<SubTile> _subTiles = new List<SubTile>();
         //public List<SubTile> SubTiles => _subTiles;
 
-        private void Start()
-        {
-            //Initialize();
-            //_subTiles = new SubTile[4];
-        }
 
         public void SetGridParams(int column, int row, int[] types)
         {

@@ -19,6 +19,9 @@ namespace ww.DropJelly
 
         [SerializeField]
         private GridTile _gridTilePrefab;
+        [SerializeField]
+        private ParentTile _parentTilePrefab;
+        public ParentTile ParentTilePrefab => _parentTilePrefab;
 
         private float _boardWidth;
         private float _boardHeight;
@@ -27,19 +30,18 @@ namespace ww.DropJelly
 
         private void Start()
         {
-            InitBoard();
+            //InitBoard();
         }
 
         public void InitBoard()
         {
-            InitTileBackgrounds();
+            InitGrid();
+            Debug.Log("Board Initialized");
         }
 
-        private void InitTileBackgrounds()
+        private void InitGrid()
         {
-            //int m_currentTileNumber = 0;
-            // TODO: Refactor this with correct x and y values. x and y values are swapped for the tileBackgrounds and parentTiles.
-            // ps: it has solved a bit sloppy but it is not a big deal
+            int m_currentTileNumber = 0;
             for (int x = 0; x < _numberOfColumns; x++)
             {
                 for (int y = 0; y < _numberOfRows; y++)
@@ -50,15 +52,21 @@ namespace ww.DropJelly
                     gridTile.gameObject.name = "tbg " + y + "-" + x;
                     gridTile.HasParentTile = false;
 
-                    //if (LevelManager.Instance.CurrentLevelData.levelTiles.Count > m_currentTileNumber && !LevelManager.Instance.CurrentLevelData.levelTiles[m_currentTileNumber].isEmpty)
-                    //{
-                    //    gridTile.HasParentTile = true;
-                    //    ParentTile parentTile = Instantiate(LevelManager.Instance.ParentTilePrefab, TilePosition(new Vector2(y, x)), Quaternion.identity);
-                    //    parentTile.SetGridParams(y,x, LevelManager.Instance.CurrentLevelData.levelTiles[m_currentTileNumber].types);
-                    //}
-                    //m_currentTileNumber++;
+                    PlaceParentTiles(gridTile, x, y, m_currentTileNumber);
+
+                    m_currentTileNumber++;
 
                 }
+            }
+        }
+
+        private void PlaceParentTiles(GridTile gridTile, int column, int row, int gridNr)
+        {
+            if (LevelManager.Instance.CurrentLevelData.levelTiles.Count > gridNr && !LevelManager.Instance.CurrentLevelData.levelTiles[gridNr].isEmpty)
+            {
+                gridTile.HasParentTile = true;
+                ParentTile parentTile = Instantiate(_parentTilePrefab, TilePosition(new Vector2(row, column)), Quaternion.identity);
+                parentTile.SetGridParams(row, column, LevelManager.Instance.CurrentLevelData.levelTiles[gridNr].types);
             }
         }
 

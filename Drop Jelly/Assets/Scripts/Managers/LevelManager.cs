@@ -20,9 +20,6 @@ namespace ww.DropJelly
 
         private LevelData _currentLevelData;
         public LevelData CurrentLevelData { get => _levelDatas[_currentLevel]; }
-        [SerializeField]
-        private ParentTile _parentTilePrefab;
-        public ParentTile ParentTilePrefab { get => _parentTilePrefab; }
 
         private void Start()
         {
@@ -31,7 +28,7 @@ namespace ww.DropJelly
 
         public void InitActiveParentTile()
         {
-            ParentTile m_activeParentTile = Instantiate(_parentTilePrefab);
+            ParentTile m_activeParentTile = Instantiate(BoardManager.Instance.ParentTilePrefab);
             m_activeParentTile.SetGridParams(4, 4, CurrentLevelData.tilesToMove[_currentStep% CurrentLevelData.tilesToMove.Count].types);
             m_activeParentTile.transform.position = new Vector2(0, 15);
             InputHandler.Instance.ActiveParentTile = m_activeParentTile;

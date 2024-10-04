@@ -18,8 +18,8 @@ namespace ww.DropJelly
 
         private void Start()
         {
-            //TileManager.Instance.InitializeParentTilesOnBoart();
-            //TileManager.Instance.InitializeSubtilesOnBoard();
+            TileHandler.Instance.InitializeParentTilesOnBoard();
+            TileHandler.Instance.InitializeSubtilesOnBoard();
             BoardManager.Instance.InitBoard();
             LevelManager.Instance.InitActiveParentTile();
         }

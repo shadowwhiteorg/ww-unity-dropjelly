@@ -8,8 +8,9 @@ namespace ww.DropJelly
 {
     internal class TileHandler : Singleton<TileHandler>
     {
+        #region Grid Tile Related
         private Dictionary<GridTile, (int row, int column)> tileBackgroundDictionary =
-            new Dictionary<GridTile, (int row, int column)>();
+           new Dictionary<GridTile, (int row, int column)>();
 
         public void AddTileToDictionary(GridTile tile, int row, int column)
         {
@@ -18,7 +19,7 @@ namespace ww.DropJelly
         public Dictionary<int, List<GridTile>> GetTilesGroupedByColumn()
         {
             Dictionary<int, List<GridTile>> columnToTiles = new Dictionary<int, List<GridTile>>();
-                
+
             foreach (var entry in tileBackgroundDictionary)
             {
                 int column = entry.Value.column;
@@ -42,7 +43,8 @@ namespace ww.DropJelly
                 return tilesGroupedByRow[column];
             }
             return new List<GridTile>();
-        }
+        } 
+        #endregion
         public Vector2 ActiveColumnPosition()
         {
             for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
@@ -89,7 +91,7 @@ namespace ww.DropJelly
 
         private ParentTile[,] _parentTilesOnBoard;
         public ParentTile[,] ParentTilesOnBoard => _parentTilesOnBoard;
-        public void InitializeParentTilesOnBoart()
+        public void InitializeParentTilesOnBoard()
         {
             _parentTilesOnBoard = new ParentTile[BoardManager.Instance.NumberOfColumns, BoardManager.Instance.NumberOfRows];
         }
