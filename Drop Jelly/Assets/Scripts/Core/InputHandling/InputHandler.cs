@@ -39,13 +39,13 @@ namespace ww.DropJelly
 
                 if( Mathf.Abs(currentMousePosition.x - initialMousePosition.x) > minInputDistance)
                 {
-                    _isActive = true;
+                    //_isActive = true;
                     SetActiveParentTilePosition(true);
                 }
             }
             if (Input.GetMouseButtonUp(0))
             {
-                _isActive = false;
+                //_isActive = false;
                 SetActiveParentTilePosition(false);
             }
         }

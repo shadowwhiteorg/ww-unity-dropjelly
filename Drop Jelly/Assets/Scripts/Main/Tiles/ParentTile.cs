@@ -101,11 +101,11 @@ namespace ww.DropJelly
             {
                 if (_subTiles[i] != null)
                 {
-                    if (MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
-                    {
-                        m_HasMatch = true;
-                        break;
-                    }
+                    //if (MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
+                    //{
+                    //    m_HasMatch = true;
+                    //    break;
+                    //}
                 }
             }
 
@@ -118,8 +118,8 @@ namespace ww.DropJelly
             {
                 if (_subTiles[i] != null)
                 {
-                    if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
-                        MatchHandler.Instance.CheckMatch(_subTiles[i]);
+                    //if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
+                    //    MatchHandler.Instance.CheckMatch(_subTiles[i]);
                         yield return new WaitForSeconds(delay);
                 }
             }
@@ -185,8 +185,8 @@ namespace ww.DropJelly
                 subTileToInit.ParentTile = this;
                 subTileToInit.name = $"parent {_column}{_row} SubTile{subTileColumn}{subTileRow}";
                 subTileToInit.SetGridParams(_column * 2 + subTileColumn, _row * 2 + subTileRow, _subTiles[sourceIndex].Type);
-                if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(subTileToInit) /*|| MatchManager.Instance.HasMatchWithNeighborParentTiles(centerTile)*/)
-                    MatchHandler.Instance.CheckMatch(subTileToInit);
+                //if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(subTileToInit) /*|| MatchManager.Instance.HasMatchWithNeighborParentTiles(centerTile)*/)
+                //    MatchHandler.Instance.CheckMatch(subTileToInit);
             }
             //StartCoroutine(FillTheTilesCoroutine(sourceIndex, targetIndex, position, subTileColumn, subTileRow, centerTile));
         }
