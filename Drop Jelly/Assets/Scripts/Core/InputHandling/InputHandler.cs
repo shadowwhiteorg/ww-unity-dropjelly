@@ -15,14 +15,14 @@ namespace ww.DropJelly
         private Vector2 initialMousePosition;
         public Vector2 currentMousePosition;
 
-        private bool _isActive = false;
+        private bool _isActive = true;
         public  bool IsActive { get { return _isActive; } }
 
         
 
         private void Update()
         {
-            //if(_isActive)
+            if(_isActive)
                 GetInput();
         }
 
@@ -83,6 +83,7 @@ namespace ww.DropJelly
             yield return new WaitForEndOfFrame();
             parentTile.ControlMatchesInOrder();
             yield return new WaitForSeconds(11);
+            _isActive = true;
             TileHandler.Instance.CheckAndRemoveEmptyParentTiles();
             TileHandler.Instance.CheckBackgroundTileHasParentStatus();
             yield return new WaitForEndOfFrame();
