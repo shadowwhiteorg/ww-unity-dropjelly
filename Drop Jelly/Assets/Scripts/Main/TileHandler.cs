@@ -131,6 +131,13 @@ namespace ww.DropJelly
         private SubTile[,] _subtilesOnBoard;
         public SubTile[,] SubtilesOnBoard => _subtilesOnBoard;
 
+        public void Init()
+        {
+            InitializeParentTilesOnBoard();
+            InitializeSubtilesOnBoard();
+            InitializeActiveParentTile();
+        }
+
         public void InitializeSubtilesOnBoard()
         {
             _subtilesOnBoard = new SubTile[BoardManager.Instance.NumberOfColumns * 2, BoardManager.Instance.NumberOfRows * 2];
@@ -204,6 +211,17 @@ namespace ww.DropJelly
                     tile.HasParentTile = false;
                 }
             }
+        }
+
+        public void InitializeActiveParentTile()
+        {
+            int m_currentStep = LevelManager.Instance.CurrentStep % LevelManager.Instance.CurrentLevelData.tilesToMove.Count;
+            ParentTile m_activeParentTile = Instantiate(BoardManager.Instance.ParentTilePrefab);
+            m_activeParentTile.SetGridParams(4, 4, LevelManager.Instance.CurrentLevelData.tilesToMove[m_currentStep].types);
+            m_activeParentTile.transform.position = new Vector2(0, 15);
+            InputHandler.Instance.ActiveParentTile = m_activeParentTile;
+            LevelManager.Instance.CurrentStep++;
+            GameManager.Instance.CurrentMove--;
         }
     }
 }

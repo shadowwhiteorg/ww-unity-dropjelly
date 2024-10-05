@@ -18,16 +18,31 @@ namespace ww.DropJelly
         private bool _isActive = true;
         public  bool IsActive { get { return _isActive; } }
 
-        
 
         private void Update()
         {
-            if(_isActive)
+            if(_isActive && GameManager.Instance.IsGameActive)
                 GetInput();
         }
 
+        private void OnEnable()
+        {
+            EventManager.OnLevelFailed += DeactvateInput;
+        }
+
+        private void OnDisable()
+        {
+            EventManager.OnLevelFailed -= DeactvateInput;
+        }
+
+
         private void GetInput()
         {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                SceneHandler.Instance.LoadNextLevel();
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 initialMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -47,6 +62,7 @@ namespace ww.DropJelly
             {
                 _isActive = false;
                 SetActiveParentTilePosition(false);
+                //GameManager.Instance.CurrentMove--;
             }
         }
 
@@ -63,7 +79,7 @@ namespace ww.DropJelly
         public void SendParentTileToTarget(ParentTile parentTile, Vector2 targetPosition, bool fromInput)
         {
             Vector2 m_targetPosition = targetPosition;
-            if(fromInput)
+            if (fromInput)
                 StartCoroutine(SetTileToTargetPositionFromInput(parentTile, m_targetPosition));
             else
                 StartCoroutine(SetTileToTargetPosition(parentTile, m_targetPosition));
@@ -87,13 +103,14 @@ namespace ww.DropJelly
             TileHandler.Instance.CheckAndRemoveEmptyParentTiles();
             TileHandler.Instance.CheckBackgroundTileHasParentStatus();
             yield return new WaitForEndOfFrame();
-            LevelManager.Instance.InitActiveParentTile();
+            TileHandler.Instance.InitializeActiveParentTile();
 
         }
 
         private IEnumerator SetTileToTargetPosition(ParentTile parentTile, Vector2 targetPosition)
         {
-
+            //if(parentTile == null)
+            //    yield break;
             parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
             while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
             {
@@ -103,7 +120,11 @@ namespace ww.DropJelly
             parentTile.transform.position = targetPosition;
             yield return new WaitForEndOfFrame();
             parentTile.ControlMatchesInOrder();
-            //parentTile.CheckMatchesFromNeighborParentTiles();
+        }
+
+        private void DeactvateInput()
+        {
+            _isActive = false;
         }
 
     }

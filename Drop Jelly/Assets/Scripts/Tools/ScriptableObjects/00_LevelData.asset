@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 00_LevelData
   m_EditorClassIdentifier: 
   levelNumber: 0
+  targetScore: 10
+  maxMoves: 10
   levelTiles:
   - isEmpty: 0
     types: 02000000030000000200000003000000

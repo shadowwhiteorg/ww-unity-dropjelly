@@ -30,6 +30,7 @@ namespace ww.DropJelly
                 TileHandler.Instance.CheckedMatchOperation(tileToCheck);
                 tileToCheck.IsMatched = true;
                 centerTile.IsMatched = true;
+                GameManager.Instance.CurrentTarget--;
                 CheckMatch(tileToCheck);
             }
         }
