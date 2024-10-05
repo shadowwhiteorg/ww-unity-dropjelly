@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using ww.Utilities.Singleton;
+using UnityEngine;
+
 namespace ww.DropJelly
 {
     internal class MatchHandler : Singleton<MatchHandler>
@@ -14,7 +14,6 @@ namespace ww.DropJelly
 
         private void CheckMatchesInNeighbors(SubTile centerTile)
         {
-
             CheckMatchInDirection(centerTile, 1, 0); // Check right tile
             CheckMatchInDirection(centerTile, -1, 0); // Check left tile
             CheckMatchInDirection(centerTile, 0, 1); // Check up tile
@@ -30,32 +29,32 @@ namespace ww.DropJelly
                 TileHandler.Instance.CheckedMatchOperation(tileToCheck);
                 tileToCheck.IsMatched = true;
                 centerTile.IsMatched = true;
-                GameManager.Instance.CurrentTarget--;
+                //GameManager.Instance.CurrentTarget--;
                 CheckMatch(tileToCheck);
             }
         }
 
-
         public bool HasMatchWithNeighbors(SubTile centerTile)
         {
-            bool m_hasParentMatchInParent = false;
+            bool m_hasMatchInParent = false;
             List<bool> m_checkedSubtiles = new List<bool>();
-            m_checkedSubtiles.Add(CheckMatchesForParentTiles(centerTile, 1, 0)); // Check right tile
-            m_checkedSubtiles.Add(CheckMatchesForParentTiles(centerTile, -1, 0)); // Check left tile
-            m_checkedSubtiles.Add(CheckMatchesForParentTiles(centerTile, 0, 1)); // Check up tile
-            m_checkedSubtiles.Add(CheckMatchesForParentTiles(centerTile, 0, -1));// Check down tile
+            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 1, 0)); // Check right tile
+            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, -1, 0)); // Check left tile
+            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 0, 1)); // Check up tile
+            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 0, -1));// Check down tile
 
             for (int i = 0; i < m_checkedSubtiles.Count; i++)
             {
                 if (m_checkedSubtiles[i])
                 {
-                    m_hasParentMatchInParent = true;
-                    return m_hasParentMatchInParent;
+                    m_hasMatchInParent = true;
+                    return m_hasMatchInParent;
                 }
             }
-            return m_hasParentMatchInParent;
+            return m_hasMatchInParent;
         }
-        private bool CheckMatchesForParentTiles(SubTile centerTile, int xOffset, int yOffset)
+
+        private bool CheckMatchesInParent(SubTile centerTile, int xOffset, int yOffset)
         {
             SubTile tileToCheck = GetTile(centerTile.Column + xOffset, centerTile.Row + yOffset);
             bool m_hasParentMatch = false;

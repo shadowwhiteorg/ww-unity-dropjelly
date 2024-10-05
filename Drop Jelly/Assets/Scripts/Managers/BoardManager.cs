@@ -28,18 +28,8 @@ namespace ww.DropJelly
         private float _firstColumnPosition;
         private float _firstRowPosition;
 
-        private void Start()
-        {
-            //InitBoard();
-        }
 
-        public void InitBoard()
-        {
-            InitGrid();
-            Debug.Log("Board Initialized");
-        }
-
-        private void InitGrid()
+        public void InitGrid()
         {
             int m_currentTileNumber = 0;
             for (int x = 0; x < _numberOfColumns; x++)
@@ -55,7 +45,6 @@ namespace ww.DropJelly
                     PlaceParentTiles(gridTile, x, y, m_currentTileNumber);
 
                     m_currentTileNumber++;
-
                 }
             }
         }
@@ -69,8 +58,6 @@ namespace ww.DropJelly
                 parentTile.SetGridParams(row, column, LevelManager.Instance.CurrentLevelData.levelTiles[gridNr].types);
             }
         }
-
-
 
         private Vector2 TilePosition(Vector2 loopVector)
         {

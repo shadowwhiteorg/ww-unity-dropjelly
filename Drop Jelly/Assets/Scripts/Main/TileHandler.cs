@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using ww.Utilities.Singleton;
 
 namespace ww.DropJelly
@@ -78,11 +77,11 @@ namespace ww.DropJelly
 
             for (int i = 0; i < BoardManager.Instance.NumberOfRows; i++)
             {
-                var m_targetTileBackground = GetTilesOnColumn(ActiveTileColumn().Column)[i];
+                var m_targetGridTile = GetTilesOnColumn(ActiveTileColumn().Column)[i];
                 if (!GetTilesOnColumn(ActiveTileColumn().Column)[i].HasParentTile)
                 {
-                    m_targetTileBackground = GetTilesOnColumn(ActiveTileColumn().Column)[i];
-                    return m_targetTileBackground;
+                    m_targetGridTile = GetTilesOnColumn(ActiveTileColumn().Column)[i];
+                    return m_targetGridTile;
                 }
             }
             return null;
@@ -161,38 +160,52 @@ namespace ww.DropJelly
 
         private IEnumerator MatchedTileSequence(SubTile tile)
         {
-            float duration = .5f;
+            #region Visual Feedback
+            float duration = .35f;
             float elapsedTime = 0f;
             Vector3 startScale = tile.transform.localScale;
-            Vector3 targetScale = new Vector3(2, 2, 2);
+            Vector3 targetScale = Vector3.one * 2f;
             while (elapsedTime < duration)
             {
                 tile.transform.localScale = Vector3.Lerp(startScale, targetScale, (elapsedTime / duration));
                 elapsedTime += Time.deltaTime;
                 yield return null;
-            }
+            } 
             tile.transform.localScale = targetScale;
+            #endregion
+
             yield return new WaitForEndOfFrame();
             tile.ParentTile.RemoveSubtileFromArray(tile);
             Destroy(tile.gameObject);
             yield return new WaitForSeconds(0.5f);
-            tile.ParentTile.CheckSubTileNeigbors(tile);
+            tile.ParentTile.CheckSubTileNeigborsToFill(tile);
             yield return new WaitForSeconds(0.5f);
             ParentTile m_targetParentTile = null;
             m_targetParentTile = tile.ParentTile.LowestEmtyParentTile();
             if (m_targetParentTile != null)
             {
-                InputHandler.Instance.SendParentTileToTarget(tile.ParentTile, m_targetParentTile.transform.position, false);
+                SendParentTileToTarget(tile.ParentTile, m_targetParentTile.transform.position, false);
                 tile.ParentTile.SetGridParams(m_targetParentTile.Column, m_targetParentTile.Row);
             }
+            yield return new WaitForEndOfFrame();
+            CheckParentTilesThatHasNoTileUnder();
         }
-
-        private void OnBeforeTransformParentChanged()
+        private void CheckParentTilesThatHasNoTileUnder()
         {
-            foreach (var entry in tileBackgroundDictionary)
+            
+            for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
             {
-                var tile = entry.Key;
-                tileBackgroundDictionary[tile] = (tile.Row, tile.Column);
+                for (int j = 0; j < BoardManager.Instance.NumberOfRows; j++)
+                {
+                    if (_parentTilesOnBoard[i, j] != null)
+                    {
+                        if(_parentTilesOnBoard[i, j].LowestEmtyParentTile() != null)
+                        {
+                            SendParentTileToTarget(_parentTilesOnBoard[i, j], _parentTilesOnBoard[i, j].LowestEmtyParentTile().transform.position, false);
+                            _parentTilesOnBoard[i, j].SetGridParams(_parentTilesOnBoard[i, j].LowestEmtyParentTile().Column, _parentTilesOnBoard[i, j].LowestEmtyParentTile().Row);
+                        }
+                    }
+                }
             }
         }
 
@@ -220,6 +233,49 @@ namespace ww.DropJelly
             InputHandler.Instance.ActiveParentTile = m_activeParentTile;
             LevelManager.Instance.CurrentStep++;
             GameManager.Instance.CurrentMove--;
+        }
+
+
+        public void SendParentTileToTarget(ParentTile parentTile, Vector2 targetPosition, bool fromInput)
+        {
+            Vector2 m_targetPosition = targetPosition;
+            if (fromInput)
+                StartCoroutine(SetTilePosition(parentTile, m_targetPosition,true));
+            else
+                StartCoroutine(SetTilePosition(parentTile, m_targetPosition, false));
+        }
+
+        private IEnumerator SetTilePosition(ParentTile parentTile, Vector2 targetPosition, bool fromInput)
+        {
+            parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
+            while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
+            {
+                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.8f);
+                yield return null;
+            }
+            parentTile.transform.position = targetPosition;
+
+            StartCoroutine(TileMatchControl(parentTile, fromInput));
+        }
+
+        private IEnumerator TileMatchControl(ParentTile parentTile, bool fromInput)
+        {
+            if (!fromInput)
+            {
+                yield return new WaitForEndOfFrame();
+                if (parentTile)
+                    parentTile.ControlMatchesInOrder();
+                yield break;
+            }
+
+            parentTile.SetGridParams(TargetTile().Column, TargetTile().Row);
+            parentTile.ControlMatchesInOrder();
+            yield return new WaitForSeconds(3);
+            InputHandler.Instance.IsActive = true;
+            CheckAndRemoveEmptyParentTiles();
+            CheckBackgroundTileHasParentStatus();
+            yield return new WaitForEndOfFrame();
+            InitializeActiveParentTile();
         }
     }
 }

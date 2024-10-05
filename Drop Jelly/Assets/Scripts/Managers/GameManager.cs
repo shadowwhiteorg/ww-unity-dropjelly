@@ -43,6 +43,21 @@ namespace ww.DropJelly
             }
         }
 
+
+        private void Start()
+        {
+            UIManager.Instance.Init();
+            Init();
+            TileHandler.Instance.Init();
+            BoardManager.Instance.InitGrid();
+        }
+        private void Init()
+        {
+            _isGameActive = true;
+            CurrentMove = LevelManager.Instance.CurrentLevelData.maxMoves;
+            CurrentTarget = LevelManager.Instance.CurrentLevelData.targetScore;
+        }
+
         public void CheckLevelEndCondition()
         {
             if (_currentMove <= 0 && _isGameActive)
@@ -57,19 +72,6 @@ namespace ww.DropJelly
             }
         }
 
-        private void Start()
-        {
-            UIManager.Instance.Init();
-            Init();
-            TileHandler.Instance.Init();
-            BoardManager.Instance.InitBoard();
-        }
-        private void Init()
-        {
-            _isGameActive = true;
-            CurrentMove = LevelManager.Instance.CurrentLevelData.maxMoves;
-            CurrentTarget = LevelManager.Instance.CurrentLevelData.targetScore;
-        }
 
     }
 }

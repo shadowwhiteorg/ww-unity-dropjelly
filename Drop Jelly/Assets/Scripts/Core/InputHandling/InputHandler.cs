@@ -16,7 +16,7 @@ namespace ww.DropJelly
         public Vector2 currentMousePosition;
 
         private bool _isActive = true;
-        public  bool IsActive { get { return _isActive; } }
+        public  bool IsActive { get => _isActive; set => _isActive = value; }
 
 
         private void Update()
@@ -62,7 +62,6 @@ namespace ww.DropJelly
             {
                 _isActive = false;
                 SetActiveParentTilePosition(false);
-                //GameManager.Instance.CurrentMove--;
             }
         }
 
@@ -73,53 +72,7 @@ namespace ww.DropJelly
                 new Vector2(Mathf.Clamp(currentMousePosition.x, BoardManager.Instance.BoardBorders().x,BoardManager.Instance.BoardBorders().y),
                             _activeParentTile.transform.position.y);
             else if (_activeParentTile)
-                SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position,true);
-        }
-
-        public void SendParentTileToTarget(ParentTile parentTile, Vector2 targetPosition, bool fromInput)
-        {
-            Vector2 m_targetPosition = targetPosition;
-            if (fromInput)
-                StartCoroutine(SetTileToTargetPositionFromInput(parentTile, m_targetPosition));
-            else
-                StartCoroutine(SetTileToTargetPosition(parentTile, m_targetPosition));
-        }
-
-        private IEnumerator SetTileToTargetPositionFromInput(ParentTile parentTile, Vector2 targetPosition)
-        {
-            
-            parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
-            while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
-            {
-                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.8f);
-                yield return null;
-            }
-            parentTile.transform.position = targetPosition;
-            parentTile.SetGridParams(TileHandler.Instance.TargetTile().Column, TileHandler.Instance.TargetTile().Row);
-            yield return new WaitForEndOfFrame();
-            parentTile.ControlMatchesInOrder();
-            yield return new WaitForSeconds(3);
-            _isActive = true;
-            TileHandler.Instance.CheckAndRemoveEmptyParentTiles();
-            TileHandler.Instance.CheckBackgroundTileHasParentStatus();
-            yield return new WaitForEndOfFrame();
-            TileHandler.Instance.InitializeActiveParentTile();
-
-        }
-
-        private IEnumerator SetTileToTargetPosition(ParentTile parentTile, Vector2 targetPosition)
-        {
-            //if(parentTile == null)
-            //    yield break;
-            parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
-            while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
-            {
-                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.5f);
-                yield return null;
-            }
-            parentTile.transform.position = targetPosition;
-            yield return new WaitForEndOfFrame();
-            parentTile.ControlMatchesInOrder();
+                TileHandler.Instance.SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position,true);
         }
 
         private void DeactvateInput()
