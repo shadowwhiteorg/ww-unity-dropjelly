@@ -29,6 +29,7 @@ namespace ww.DropJelly
 
         public void SetGridParams(int newColumn, int newRow)
         {
+            TileHandler.Instance.RemoveParentTileOnBoard(_column, _row);
             _column = newColumn;
             _row = newRow;
             TileHandler.Instance.AddParentTileOnBoard(this, _column, _row);
@@ -82,7 +83,8 @@ namespace ww.DropJelly
 
         public void ControlMatchesInOrder()
         {
-            StartCoroutine(CheckMatchesWithDelay(0.2f));
+            if(this.isActiveAndEnabled)
+                StartCoroutine(CheckMatchesWithDelay(0.2f));
         }
 
         private IEnumerator CheckMatchesWithDelay(float delay)
@@ -94,6 +96,7 @@ namespace ww.DropJelly
                     if (MatchHandler.Instance.HasMatchWithNeighbors(subTiles[i]))
                         MatchHandler.Instance.CheckMatch(subTiles[i]);
                     yield return new WaitForSeconds(delay);
+                    //yield return new WaitForEndOfFrame();
                 }
             }
         }
@@ -133,7 +136,7 @@ namespace ww.DropJelly
             FillTheEmptyTile(2, 0, new Vector2(0, 0), 0, 0, tile);
             FillTheEmptyTile(3, 1, new Vector2(1, 0), 1, 0, tile);
 
-            FillTheEmptyTile(0, 1, new Vector2(1, 0), 0, 0, tile);
+            FillTheEmptyTile(0, 1, new Vector2(1, 0), 1, 0, tile);
             FillTheEmptyTile(2, 3, new Vector2(1, 1), 1, 1, tile);
             FillTheEmptyTile(1, 0, new Vector2(0, 0), 0, 0, tile);
             FillTheEmptyTile(3, 2, new Vector2(0, 1), 0, 1, tile);
@@ -150,41 +153,10 @@ namespace ww.DropJelly
                 subTileToInit.ParentTile = this;
                 subTileToInit.name = $"parent {_column}{_row} SubTile{subTileColumn}{subTileRow}";
                 subTileToInit.SetGridParams(_column * 2 + subTileColumn, _row * 2 + subTileRow, subTiles[sourceIndex].Type);
-                if (MatchHandler.Instance.HasMatchWithNeighbors(subTileToInit) )
+                if (MatchHandler.Instance.HasMatchWithNeighbors(subTileToInit))
+                {
                     MatchHandler.Instance.CheckMatch(subTileToInit);
-                //StartCoroutine(CheckMatchCoroutine(subTileToInit));
-
-            }
-        }
-
-        private IEnumerator CheckMatchCoroutine(SubTile subTileToInit)
-        {
-            yield return new WaitForSeconds(.25f);
-            if (MatchHandler.Instance.HasMatchWithNeighbors(subTileToInit))
-                MatchHandler.Instance.CheckMatch(subTileToInit);
-        }
-
-        private bool HasSameTypeInAllSubTiles()
-        {
-            if (subTiles[0] && subTiles[1] && subTiles[2] && subTiles[3])
-            {
-                if (subTiles[0].Type == subTiles[1].Type && subTiles[1].Type == subTiles[2].Type && subTiles[2].Type == subTiles[3].Type)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void RemoveAllSubTiles()
-        {
-            for (int i = 0; i < subTiles.Count; i++)
-            {
-                if (subTiles[i] != null)
-                {
-                    subTiles[i].ParentTile = null;
-                    subTiles[i].gameObject.SetActive(false);
-                    subTiles[i] = null;
+                    Debug.Log("Match Found "+subTileToInit.name);
                 }
             }
         }

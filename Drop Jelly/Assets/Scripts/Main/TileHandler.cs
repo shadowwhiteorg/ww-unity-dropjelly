@@ -7,14 +7,10 @@ namespace ww.DropJelly
 {
     internal class TileHandler : Singleton<TileHandler>
     {
-        #region Grid Tile Related
+        #region Grid Tile Dict Operations
         private Dictionary<GridTile, (int row, int column)> tileBackgroundDictionary =
            new Dictionary<GridTile, (int row, int column)>();
 
-        public void AddTileToDictionary(GridTile tile, int row, int column)
-        {
-            tileBackgroundDictionary[tile] = (row, column);
-        }
         public Dictionary<int, List<GridTile>> GetTilesGroupedByColumn()
         {
             Dictionary<int, List<GridTile>> columnToTiles = new Dictionary<int, List<GridTile>>();
@@ -43,7 +39,6 @@ namespace ww.DropJelly
             }
             return new List<GridTile>();
         } 
-        #endregion
         public Vector2 ActiveColumnPosition()
         {
             for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
@@ -71,7 +66,10 @@ namespace ww.DropJelly
             }
             return null;
         }
-
+        public void AddTileToDictionary(GridTile tile, int row, int column)
+        {
+            tileBackgroundDictionary[tile] = (row, column);
+        }
         public GridTile TargetTile()
         {
 
@@ -87,13 +85,11 @@ namespace ww.DropJelly
             return null;
 
         }
+        #endregion
 
+        #region Parent Tile Dict Operations
         private ParentTile[,] _parentTilesOnBoard;
         public ParentTile[,] ParentTilesOnBoard => _parentTilesOnBoard;
-        public void InitializeParentTilesOnBoard()
-        {
-            _parentTilesOnBoard = new ParentTile[BoardManager.Instance.NumberOfColumns, BoardManager.Instance.NumberOfRows];
-        }
 
         public void AddParentTileOnBoard(ParentTile parentTile, int column, int row)
         {
@@ -126,22 +122,11 @@ namespace ww.DropJelly
         {
             return _parentTilesOnBoard[column, row];
         }
+        #endregion
 
+        #region Sub Tile Dict Operations
         private SubTile[,] _subtilesOnBoard;
         public SubTile[,] SubtilesOnBoard => _subtilesOnBoard;
-
-        public void Init()
-        {
-            InitializeParentTilesOnBoard();
-            InitializeSubtilesOnBoard();
-            InitializeActiveParentTile();
-        }
-
-        public void InitializeSubtilesOnBoard()
-        {
-            _subtilesOnBoard = new SubTile[BoardManager.Instance.NumberOfColumns * 2, BoardManager.Instance.NumberOfRows * 2];
-        }
-
         public void AddSubtileToBoard(SubTile subtile, int column, int row)
         {
 
@@ -151,9 +136,38 @@ namespace ww.DropJelly
         public SubTile GetSubtileFromBoard(int column, int row)
         {
             return _subtilesOnBoard[column, row];
+        } 
+        #endregion
+
+        public void Init()
+        {
+            InitializeParentTilesOnBoard();
+            InitializeSubtilesOnBoard();
+            InitializeActiveParentTile();
+        }
+        public void InitializeParentTilesOnBoard()
+        {
+            _parentTilesOnBoard = new ParentTile[BoardManager.Instance.NumberOfColumns, BoardManager.Instance.NumberOfRows];
+        }
+        public void InitializeSubtilesOnBoard()
+        {
+            _subtilesOnBoard = new SubTile[BoardManager.Instance.NumberOfColumns * 2, BoardManager.Instance.NumberOfRows * 2];
+        }
+        public void InitializeActiveParentTile()
+        {
+            if (GameManager.Instance.IsGameActive)
+                GameManager.Instance.CheckLevelEndCondition();
+            int m_currentStep = LevelManager.Instance.CurrentStep % LevelManager.Instance.CurrentLevelData.tilesToMove.Count;
+            ParentTile m_activeParentTile = Instantiate(BoardManager.Instance.ParentTilePrefab);
+            m_activeParentTile.SetGridParams(4, 4, LevelManager.Instance.CurrentLevelData.tilesToMove[m_currentStep].types);
+            m_activeParentTile.transform.position = new Vector2(0, 15);
+            InputHandler.Instance.ActiveParentTile = m_activeParentTile;
+            LevelManager.Instance.CurrentStep++;
+            GameManager.Instance.CurrentMove--;
         }
 
-        public void CheckedMatchOperation(SubTile matchedTile)
+
+        public void CheckedMatchedSubTiles(SubTile matchedTile)
         {
             StartCoroutine(MatchedTileSequence(matchedTile));
         }
@@ -174,12 +188,12 @@ namespace ww.DropJelly
             tile.transform.localScale = targetScale;
             #endregion
 
-            yield return new WaitForEndOfFrame();
+            //yield return new WaitForSeconds(0.5f);
             tile.ParentTile.RemoveSubtileFromArray(tile);
             Destroy(tile.gameObject);
             yield return new WaitForSeconds(0.5f);
             tile.ParentTile.CheckSubTileNeigborsToFill(tile);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             ParentTile m_targetParentTile = null;
             m_targetParentTile = tile.ParentTile.LowestEmtyParentTile();
             if (m_targetParentTile != null)
@@ -187,12 +201,12 @@ namespace ww.DropJelly
                 SendParentTileToTarget(tile.ParentTile, m_targetParentTile.transform.position, false);
                 tile.ParentTile.SetGridParams(m_targetParentTile.Column, m_targetParentTile.Row);
             }
-            yield return new WaitForEndOfFrame();
-            CheckParentTilesThatHasNoTileUnder();
+            yield return new WaitForSeconds(0.1f);
+            CheckIfParentTilesThatHasNoTileUnder();
         }
-        private void CheckParentTilesThatHasNoTileUnder()
+        private void CheckIfParentTilesThatHasNoTileUnder()
         {
-            
+            ParentTile m_sourceParentTile;
             for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
             {
                 for (int j = 0; j < BoardManager.Instance.NumberOfRows; j++)
@@ -201,8 +215,9 @@ namespace ww.DropJelly
                     {
                         if(_parentTilesOnBoard[i, j].LowestEmtyParentTile() != null)
                         {
-                            SendParentTileToTarget(_parentTilesOnBoard[i, j], _parentTilesOnBoard[i, j].LowestEmtyParentTile().transform.position, false);
-                            _parentTilesOnBoard[i, j].SetGridParams(_parentTilesOnBoard[i, j].LowestEmtyParentTile().Column, _parentTilesOnBoard[i, j].LowestEmtyParentTile().Row);
+                            m_sourceParentTile = _parentTilesOnBoard[i, j];
+                            SendParentTileToTarget(m_sourceParentTile, m_sourceParentTile.LowestEmtyParentTile().transform.position, false);
+                            //m_sourceParentTile.SetGridParams(m_sourceParentTile.LowestEmtyParentTile().Column, m_sourceParentTile.LowestEmtyParentTile().Row);
                         }
                     }
                 }
@@ -221,20 +236,6 @@ namespace ww.DropJelly
                     tile.HasParentTile = false;
             }
         }
-
-        public void InitializeActiveParentTile()
-        {
-            if (GameManager.Instance.IsGameActive)
-                GameManager.Instance.CheckLevelEndCondition();
-            int m_currentStep = LevelManager.Instance.CurrentStep % LevelManager.Instance.CurrentLevelData.tilesToMove.Count;
-            ParentTile m_activeParentTile = Instantiate(BoardManager.Instance.ParentTilePrefab);
-            m_activeParentTile.SetGridParams(4, 4, LevelManager.Instance.CurrentLevelData.tilesToMove[m_currentStep].types);
-            m_activeParentTile.transform.position = new Vector2(0, 15);
-            InputHandler.Instance.ActiveParentTile = m_activeParentTile;
-            LevelManager.Instance.CurrentStep++;
-            GameManager.Instance.CurrentMove--;
-        }
-
 
         public void SendParentTileToTarget(ParentTile parentTile, Vector2 targetPosition, bool fromInput)
         {
@@ -264,11 +265,16 @@ namespace ww.DropJelly
             {
                 yield return new WaitForEndOfFrame();
                 if (parentTile)
+                {   
+                    if(parentTile.LowestEmtyParentTile())
+                        parentTile.SetGridParams(parentTile.LowestEmtyParentTile().Column, parentTile.LowestEmtyParentTile().Row);
                     parentTile.ControlMatchesInOrder();
+                }
                 yield break;
             }
-
+            yield return new WaitForEndOfFrame();
             parentTile.SetGridParams(TargetTile().Column, TargetTile().Row);
+            
             parentTile.ControlMatchesInOrder();
             yield return new WaitForSeconds(3);
             InputHandler.Instance.IsActive = true;

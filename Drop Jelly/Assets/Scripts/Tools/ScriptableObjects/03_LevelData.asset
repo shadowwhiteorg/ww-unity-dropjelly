@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 0
   targetScore: 30
-  maxMoves: 6
+  maxMoves: 99
   levelTiles:
   - isEmpty: 0
     types: 00000000000000000000000000000000

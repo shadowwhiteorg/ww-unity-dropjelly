@@ -9,11 +9,6 @@ namespace ww.DropJelly
 
         public void CheckMatch(SubTile centerTile)
         {
-            CheckMatchesInNeighbors(centerTile);
-        }
-
-        private void CheckMatchesInNeighbors(SubTile centerTile)
-        {
             CheckMatchInDirection(centerTile, 1, 0); // Check right tile
             CheckMatchInDirection(centerTile, -1, 0); // Check left tile
             CheckMatchInDirection(centerTile, 0, 1); // Check up tile
@@ -22,15 +17,15 @@ namespace ww.DropJelly
 
         private void CheckMatchInDirection(SubTile centerTile, int xOffset, int yOffset)
         {
-            SubTile tileToCheck = GetTile(centerTile.Column + xOffset, centerTile.Row + yOffset);
+            SubTile tileToCheck = GetTileToCheckMatch(centerTile.Column + xOffset, centerTile.Row + yOffset);
             if (tileToCheck != null && tileToCheck.Type == centerTile.Type && !tileToCheck.IsMatched)
             {
-                TileHandler.Instance.CheckedMatchOperation(centerTile);
-                TileHandler.Instance.CheckedMatchOperation(tileToCheck);
+                TileHandler.Instance.CheckedMatchedSubTiles(centerTile);
+                TileHandler.Instance.CheckedMatchedSubTiles(tileToCheck);
                 tileToCheck.IsMatched = true;
                 centerTile.IsMatched = true;
-                //GameManager.Instance.CurrentTarget--;
                 CheckMatch(tileToCheck);
+                GameManager.Instance.CurrentTarget--;
             }
         }
 
@@ -38,10 +33,10 @@ namespace ww.DropJelly
         {
             bool m_hasMatchInParent = false;
             List<bool> m_checkedSubtiles = new List<bool>();
-            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 1, 0)); // Check right tile
-            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, -1, 0)); // Check left tile
-            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 0, 1)); // Check up tile
-            m_checkedSubtiles.Add(CheckMatchesInParent(centerTile, 0, -1));// Check down tile
+            m_checkedSubtiles.Add(HasMatchesInParent(centerTile, 1, 0)); // Check right tile
+            m_checkedSubtiles.Add(HasMatchesInParent(centerTile, -1, 0)); // Check left tile
+            m_checkedSubtiles.Add(HasMatchesInParent(centerTile, 0, 1)); // Check up tile
+            m_checkedSubtiles.Add(HasMatchesInParent(centerTile, 0, -1));// Check down tile
 
             for (int i = 0; i < m_checkedSubtiles.Count; i++)
             {
@@ -54,9 +49,9 @@ namespace ww.DropJelly
             return m_hasMatchInParent;
         }
 
-        private bool CheckMatchesInParent(SubTile centerTile, int xOffset, int yOffset)
+        private bool HasMatchesInParent(SubTile centerTile, int xOffset, int yOffset)
         {
-            SubTile tileToCheck = GetTile(centerTile.Column + xOffset, centerTile.Row + yOffset);
+            SubTile tileToCheck = GetTileToCheckMatch(centerTile.Column + xOffset, centerTile.Row + yOffset);
             bool m_hasParentMatch = false;
             if (tileToCheck != null && tileToCheck.Type == centerTile.Type && !tileToCheck.IsMatched)
             {
@@ -68,7 +63,7 @@ namespace ww.DropJelly
             return m_hasParentMatch;
         }
 
-        private SubTile GetTile(int column, int row)
+        private SubTile GetTileToCheckMatch(int column, int row)
         {
             if (column >= 0 && column < BoardManager.Instance.NumberOfColumns * 2 && row >= 0 && row < BoardManager.Instance.NumberOfRows * 2)
             {

@@ -49,30 +49,26 @@ namespace ww.DropJelly
             }
             if (Input.GetMouseButton(0))
             {
-                
                 currentMousePosition = new Vector2( Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, BoardManager.Instance.BoardBorders().x, BoardManager.Instance.BoardBorders().y),0);
 
                 if( Mathf.Abs(currentMousePosition.x - initialMousePosition.x) > minInputDistance)
                 {
                     _isActive = true;
-                    SetActiveParentTilePosition(true);
+                    SetActiveParentTilePosition();
                 }
             }
             if (Input.GetMouseButtonUp(0))
             {
                 _isActive = false;
-                SetActiveParentTilePosition(false);
+                TileHandler.Instance.SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position, true);
             }
         }
 
-        private void SetActiveParentTilePosition(bool mouseDown)
+        private void SetActiveParentTilePosition()
         {
-            if (mouseDown) 
             _activeParentTile.transform.position = 
                 new Vector2(Mathf.Clamp(currentMousePosition.x, BoardManager.Instance.BoardBorders().x,BoardManager.Instance.BoardBorders().y),
                             _activeParentTile.transform.position.y);
-            else if (_activeParentTile)
-                TileHandler.Instance.SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position,true);
         }
 
         private void DeactvateInput()
