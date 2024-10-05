@@ -58,7 +58,6 @@ namespace ww.DropJelly
                 parentTile.SetGridParams(row, column, LevelManager.Instance.CurrentLevelData.levelTiles[gridNr].types);
             }
         }
-
         private Vector2 TilePosition(Vector2 loopVector)
         {
             return FirstTilePosition() + loopVector*_tileOffset;

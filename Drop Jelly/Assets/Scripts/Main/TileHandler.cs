@@ -39,6 +39,8 @@ namespace ww.DropJelly
             }
             return new List<GridTile>();
         } 
+
+
         public Vector2 ActiveColumnPosition()
         {
             for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
@@ -202,9 +204,9 @@ namespace ww.DropJelly
                 tile.ParentTile.SetGridParams(m_targetParentTile.Column, m_targetParentTile.Row);
             }
             yield return new WaitForSeconds(0.1f);
-            CheckIfParentTilesThatHasNoTileUnder();
+            CheckIfParentTileHasNoTileUnder();
         }
-        private void CheckIfParentTilesThatHasNoTileUnder()
+        private void CheckIfParentTileHasNoTileUnder()
         {
             ParentTile m_sourceParentTile;
             for (int i = 0; i < BoardManager.Instance.NumberOfColumns; i++)
@@ -217,14 +219,13 @@ namespace ww.DropJelly
                         {
                             m_sourceParentTile = _parentTilesOnBoard[i, j];
                             SendParentTileToTarget(m_sourceParentTile, m_sourceParentTile.LowestEmtyParentTile().transform.position, false);
-                            //m_sourceParentTile.SetGridParams(m_sourceParentTile.LowestEmtyParentTile().Column, m_sourceParentTile.LowestEmtyParentTile().Row);
                         }
                     }
                 }
             }
         }
 
-        public void CheckBackgroundTileHasParentStatus()
+        public void CheckBackgroundTileHasParent()
         {
             foreach (var entry in tileBackgroundDictionary)
             {
@@ -251,7 +252,7 @@ namespace ww.DropJelly
             parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
             while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
             {
-                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.8f);
+                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.5f);
                 yield return null;
             }
             parentTile.transform.position = targetPosition;
@@ -279,9 +280,16 @@ namespace ww.DropJelly
             yield return new WaitForSeconds(3);
             InputHandler.Instance.IsActive = true;
             CheckAndRemoveEmptyParentTiles();
-            CheckBackgroundTileHasParentStatus();
+            CheckBackgroundTileHasParent();
             yield return new WaitForEndOfFrame();
             InitializeActiveParentTile();
+        }
+        public void DisableAllGridTiles()
+        {
+            foreach (var entry in tileBackgroundDictionary)
+            {
+                entry.Key.SetColor(false);
+            }
         }
     }
 }

@@ -12,8 +12,9 @@ namespace ww.DropJelly
         private ParentTile _activeParentTile;
         public ParentTile ActiveParentTile { get => _activeParentTile; set => _activeParentTile = value; }
 
-        private Vector2 initialMousePosition;
-        public Vector2 currentMousePosition;
+        private Vector2 _initialMousePosition;
+        private Vector2 currentMousePosition;
+        public Vector2 CurrentMousePosition => currentMousePosition;
 
         private bool _isActive = true;
         public  bool IsActive { get => _isActive; set => _isActive = value; }
@@ -45,13 +46,13 @@ namespace ww.DropJelly
 
             if (Input.GetMouseButtonDown(0))
             {
-                initialMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                _initialMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             }
             if (Input.GetMouseButton(0))
             {
-                currentMousePosition = new Vector2( Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, BoardManager.Instance.BoardBorders().x, BoardManager.Instance.BoardBorders().y),0);
+                currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-                if( Mathf.Abs(currentMousePosition.x - initialMousePosition.x) > minInputDistance)
+                if ( Mathf.Abs(currentMousePosition.x - _initialMousePosition.x) > minInputDistance)
                 {
                     _isActive = true;
                     SetActiveParentTilePosition();
@@ -61,6 +62,7 @@ namespace ww.DropJelly
             {
                 _isActive = false;
                 TileHandler.Instance.SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position, true);
+                TileHandler.Instance.DisableAllGridTiles();
             }
         }
 

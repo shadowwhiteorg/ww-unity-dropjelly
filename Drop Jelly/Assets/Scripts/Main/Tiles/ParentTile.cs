@@ -156,7 +156,6 @@ namespace ww.DropJelly
                 if (MatchHandler.Instance.HasMatchWithNeighbors(subTileToInit))
                 {
                     MatchHandler.Instance.CheckMatch(subTileToInit);
-                    Debug.Log("Match Found "+subTileToInit.name);
                 }
             }
         }

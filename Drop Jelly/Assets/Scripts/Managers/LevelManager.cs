@@ -7,23 +7,26 @@ namespace ww.DropJelly
 {
     internal class LevelManager : Singleton<LevelManager>
     {
-        private int _currentLevel = 0;
-        public int CurrentLevel => _currentLevel%_levelDatas.Count;
-        private int _currentStep;
-        public int CurrentStep { get => _currentStep; set => _currentStep = value; }
         [SerializeField]
         private List<LevelData> _levelDatas = new List<LevelData>();
-        private LevelData _currentLevelData;
-        public LevelData CurrentLevelData { get => _levelDatas[_currentLevel]; }
 
+        private int _currentLevel = 1;
+        public int CurrentLevel => _currentLevel%_levelDatas.Count;
+
+        private int _currentStep;
+        public int CurrentStep { get => _currentStep; set => _currentStep = value; }
+
+
+        private LevelData _currentLevelData;
+        public LevelData CurrentLevelData { get => _levelDatas[CurrentLevel]; }
         public void Init()
         {
-            PlayerPrefs.GetInt("CurentLevel", _currentLevel);
+            _currentLevel = PlayerPrefs.GetInt("CurrentLevel");
         }
         public void NextLevel()
         {
             _currentLevel++;
-            PlayerPrefs.SetInt("CurentLevel", _currentLevel);
+            PlayerPrefs.SetInt("CurrentLevel", _currentLevel);
         }
     }
 

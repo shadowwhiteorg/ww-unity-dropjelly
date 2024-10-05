@@ -12,10 +12,7 @@ namespace ww.DropJelly
         private int _currentMove;
         public int CurrentMove
         {
-            get
-            {
-                return _currentMove;
-            }
+            get => _currentMove;
             set
             {
                 _currentMove = value;
@@ -30,10 +27,7 @@ namespace ww.DropJelly
         private int _currentTarget = 0;
         public int CurrentTarget
         {
-            get
-            {
-                return _currentTarget;
-            }
+            get => _currentTarget;
             set
             {
                 _currentTarget = value;
@@ -43,11 +37,11 @@ namespace ww.DropJelly
             }
         }
 
-
         private void Start()
         {
             UIManager.Instance.Init();
             Init();
+            LevelManager.Instance.Init();
             TileHandler.Instance.Init();
             BoardManager.Instance.InitGrid();
         }

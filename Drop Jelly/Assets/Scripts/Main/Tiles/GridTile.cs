@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace ww.DropJelly
 {
@@ -30,7 +31,11 @@ namespace ww.DropJelly
 
         private void Update()
         {
-            CheckActiveStatus();
+            if (InputHandler.Instance.IsActive)
+            {
+                CheckActiveStatus();
+            }
+
         }
 
         public void Initialize(int column, int row)
@@ -63,7 +68,7 @@ namespace ww.DropJelly
 
         public void CheckActiveStatus()
         {
-            if (Mathf.Abs(this.transform.position.x - InputHandler.Instance.currentMousePosition.x) < BoardManager.Instance.TileOffset / 2)
+            if (Mathf.Abs(this.transform.position.x - Mathf.Clamp(InputHandler.Instance.CurrentMousePosition.x, BoardManager.Instance.BoardBorders().x, BoardManager.Instance.BoardBorders().y)) < BoardManager.Instance.TileOffset / 2)
             {
                 SetColor(true);
                 onInputRange = true;
@@ -74,7 +79,6 @@ namespace ww.DropJelly
                 onInputRange = false;
             }
         }
-
 
     }
 }
