@@ -25,13 +25,12 @@ namespace ww.DropJelly
 
         public void SetGridParams(int column, int row, int type)
         {
-            _type = type;
-            // Set the row and column for subtile matrix
             _row = row;
             _column = column;
+            _type = type;
 
             TileHandler.Instance.AddSubtileToBoard(this, _column, _row);
-            // Set the color of the subtile based on the type
+
             Color color = typeColors[type];
             color.a = 1;
             transform.GetComponentInChildren<SpriteRenderer>().color = color;

@@ -39,13 +39,13 @@ namespace ww.DropJelly
 
                 if( Mathf.Abs(currentMousePosition.x - initialMousePosition.x) > minInputDistance)
                 {
-                    //_isActive = true;
+                    _isActive = true;
                     SetActiveParentTilePosition(true);
                 }
             }
             if (Input.GetMouseButtonUp(0))
             {
-                //_isActive = false;
+                _isActive = false;
                 SetActiveParentTilePosition(false);
             }
         }
@@ -75,14 +75,14 @@ namespace ww.DropJelly
             parentTile.transform.position = new Vector2(targetPosition.x, parentTile.transform.position.y);
             while (Vector2.Distance(parentTile.transform.position, targetPosition) > 0.1f)
             {
-                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.5f);
+                parentTile.transform.position = Vector2.Lerp(parentTile.transform.position, targetPosition, 0.8f);
                 yield return null;
             }
             parentTile.transform.position = targetPosition;
             parentTile.SetGridParams(TileHandler.Instance.TargetTile().Column, TileHandler.Instance.TargetTile().Row);
             yield return new WaitForEndOfFrame();
             parentTile.ControlMatchesInOrder();
-            yield return new WaitForSeconds(11);
+            yield return new WaitForSeconds(3);
             _isActive = true;
             TileHandler.Instance.CheckAndRemoveEmptyParentTiles();
             TileHandler.Instance.CheckBackgroundTileHasParentStatus();

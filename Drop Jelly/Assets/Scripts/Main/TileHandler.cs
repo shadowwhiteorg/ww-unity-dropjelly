@@ -149,10 +149,10 @@ namespace ww.DropJelly
 
         public void CheckedMatchOperation(SubTile matchedTile)
         {
-            StartCoroutine(ScaleUpThenRemoveTile(matchedTile));
+            StartCoroutine(MatchedTileSequence(matchedTile));
         }
 
-        private IEnumerator ScaleUpThenRemoveTile(SubTile tile)
+        private IEnumerator MatchedTileSequence(SubTile tile)
         {
             float duration = .5f;
             float elapsedTime = 0f;
@@ -168,19 +168,16 @@ namespace ww.DropJelly
             yield return new WaitForEndOfFrame();
             tile.ParentTile.RemoveSubtileFromArray(tile);
             Destroy(tile.gameObject);
-            yield return new WaitForSeconds(2f);
-            tile.ParentTile.CheckEverySubtilesIfTheirNeighbourIsOnTheList(tile);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.5f);
+            tile.ParentTile.CheckSubTileNeigbors(tile);
+            yield return new WaitForSeconds(0.5f);
             ParentTile m_targetParentTile = null;
             m_targetParentTile = tile.ParentTile.LowestEmtyParentTile();
             if (m_targetParentTile != null)
             {
                 InputHandler.Instance.SendParentTileToTarget(tile.ParentTile, m_targetParentTile.transform.position, false);
                 tile.ParentTile.SetGridParams(m_targetParentTile.Column, m_targetParentTile.Row);
-
             }
-
-
         }
 
         private void OnBeforeTransformParentChanged()

@@ -66,14 +66,10 @@ namespace ww.DropJelly
             _subTiles[2]?.SetGridParams(newColumn * 2, newRow * 2 + 1);
             _subTiles[3]?.SetGridParams(newColumn * 2 + 1, newRow * 2 + 1);
 
-            //ControlMatchesInOrder();
-
-            //         for (int i = 0; i < _subTiles.Count; i++)
-            //{
-            //	MatchManager.Instance.CheckMatch(_subTiles[i]);
-            //         }
-
         }
+
+        //private void SetupSubtiles()
+
 
         private float _parentTileWidth;
         private float _parentTileHeight;
@@ -91,7 +87,7 @@ namespace ww.DropJelly
         public void ControlMatchesInOrder()
         {
             //if(HasMatchesInNeighbour())
-                StartCoroutine(CheckMatchesWithDelay(.25f));
+                StartCoroutine(CheckMatchesWithDelay(.1f));
         }
 
         private bool HasMatchesInNeighbour()
@@ -118,9 +114,9 @@ namespace ww.DropJelly
             {
                 if (_subTiles[i] != null)
                 {
-                    //if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
-                    //    MatchHandler.Instance.CheckMatch(_subTiles[i]);
-                        yield return new WaitForSeconds(delay);
+                    if (MatchHandler.Instance.HasMatchWithNeighborParentTiles(_subTiles[i]))
+                        MatchHandler.Instance.CheckMatch(_subTiles[i]);
+                    yield return new WaitForSeconds(delay);
                 }
             }
         }
@@ -161,7 +157,7 @@ namespace ww.DropJelly
 
 
 
-        public void CheckEverySubtilesIfTheirNeighbourIsOnTheList(SubTile tile)
+        public void CheckSubTileNeigbors(SubTile tile)
         {
             FillTheEmptyTile(0, 2, new Vector2(0, 1), 0, 1, tile);
             FillTheEmptyTile(1, 3, new Vector2(1, 1), 1, 1, tile);
@@ -185,8 +181,8 @@ namespace ww.DropJelly
                 subTileToInit.ParentTile = this;
                 subTileToInit.name = $"parent {_column}{_row} SubTile{subTileColumn}{subTileRow}";
                 subTileToInit.SetGridParams(_column * 2 + subTileColumn, _row * 2 + subTileRow, _subTiles[sourceIndex].Type);
-                //if(MatchHandler.Instance.HasMatchWithNeighborParentTiles(subTileToInit) /*|| MatchManager.Instance.HasMatchWithNeighborParentTiles(centerTile)*/)
-                //    MatchHandler.Instance.CheckMatch(subTileToInit);
+                if (MatchHandler.Instance.HasMatchWithNeighborParentTiles(subTileToInit) /*|| MatchManager.Instance.HasMatchWithNeighborParentTiles(centerTile)*/)
+                    MatchHandler.Instance.CheckMatch(subTileToInit);
             }
             //StartCoroutine(FillTheTilesCoroutine(sourceIndex, targetIndex, position, subTileColumn, subTileRow, centerTile));
         }
