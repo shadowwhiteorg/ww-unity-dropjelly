@@ -35,21 +35,8 @@ namespace ww.DropJelly
             }
         }
 
-        private bool CheckMatchesForParentTiles(SubTile centerTile, int xOffset, int yOffset)
-        {
-            SubTile tileToCheck = GetTile(centerTile.Column + xOffset, centerTile.Row + yOffset);
-            bool m_hasParentMatch = false;
-            if (tileToCheck != null && tileToCheck.Type == centerTile.Type && !tileToCheck.IsMatched)
-            {
-                if (tileToCheck.ParentTile != centerTile.ParentTile)
-                {
-                    m_hasParentMatch = true;
-                }
-            }
-            return m_hasParentMatch;
-        }
 
-        public bool HasMatchWithNeighborParentTiles(SubTile centerTile)
+        public bool HasMatchWithNeighbors(SubTile centerTile)
         {
             bool m_hasParentMatchInParent = false;
             List<bool> m_checkedSubtiles = new List<bool>();
@@ -67,6 +54,19 @@ namespace ww.DropJelly
                 }
             }
             return m_hasParentMatchInParent;
+        }
+        private bool CheckMatchesForParentTiles(SubTile centerTile, int xOffset, int yOffset)
+        {
+            SubTile tileToCheck = GetTile(centerTile.Column + xOffset, centerTile.Row + yOffset);
+            bool m_hasParentMatch = false;
+            if (tileToCheck != null && tileToCheck.Type == centerTile.Type && !tileToCheck.IsMatched)
+            {
+                if (tileToCheck.ParentTile != centerTile.ParentTile)
+                {
+                    m_hasParentMatch = true;
+                }
+            }
+            return m_hasParentMatch;
         }
 
         private SubTile GetTile(int column, int row)

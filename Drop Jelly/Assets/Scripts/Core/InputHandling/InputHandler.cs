@@ -72,7 +72,7 @@ namespace ww.DropJelly
             _activeParentTile.transform.position = 
                 new Vector2(Mathf.Clamp(currentMousePosition.x, BoardManager.Instance.BoardBorders().x,BoardManager.Instance.BoardBorders().y),
                             _activeParentTile.transform.position.y);
-            else
+            else if (_activeParentTile)
                 SendParentTileToTarget(_activeParentTile, TileHandler.Instance.TargetTile().transform.position,true);
         }
 

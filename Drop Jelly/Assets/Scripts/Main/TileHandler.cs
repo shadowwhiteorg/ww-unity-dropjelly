@@ -203,18 +203,16 @@ namespace ww.DropJelly
                 var tile = entry.Key;
                 var (row, column) = entry.Value;
                 if (GetParentTileOnBoard(column, row) != null)
-                {
                     tile.HasParentTile = true;
-                }
                 else
-                {
                     tile.HasParentTile = false;
-                }
             }
         }
 
         public void InitializeActiveParentTile()
         {
+            if (GameManager.Instance.IsGameActive)
+                GameManager.Instance.CheckLevelEndCondition();
             int m_currentStep = LevelManager.Instance.CurrentStep % LevelManager.Instance.CurrentLevelData.tilesToMove.Count;
             ParentTile m_activeParentTile = Instantiate(BoardManager.Instance.ParentTilePrefab);
             m_activeParentTile.SetGridParams(4, 4, LevelManager.Instance.CurrentLevelData.tilesToMove[m_currentStep].types);

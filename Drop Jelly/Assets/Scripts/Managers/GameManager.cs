@@ -18,15 +18,12 @@ namespace ww.DropJelly
             }
             set
             {
-                // Add your logic here
                 _currentMove = value;
-                UIManager.Instance.UpdateMoveText(_currentMove);
-                Debug.Log("Current Move: " + _currentMove);
-                if (_currentMove <= 0 && _isGameActive)
+                if(_currentMove < 0)
                 {
-                    _isGameActive = false;
-                    EventManager.LevelFailed();
+                    _currentMove = 0;
                 }
+                UIManager.Instance.UpdateMoveText(_currentMove);
             }
         }
 
@@ -39,14 +36,24 @@ namespace ww.DropJelly
             }
             set
             {
-                // Add your logic here
                 _currentTarget = value;
+                if(_currentTarget < 0)
+                    _currentTarget = 0;
                 UIManager.Instance.UpdateTargetText(_currentTarget);
-                if (_currentTarget <= 0 && _isGameActive)
-                {
-                    _isGameActive = false;
-                    EventManager.LevelComplete();
-                }
+            }
+        }
+
+        public void CheckLevelEndCondition()
+        {
+            if (_currentMove <= 0 && _isGameActive)
+            {
+                _isGameActive = false;
+                EventManager.LevelFailed();
+            }
+            if (_currentTarget <= 0 && _isGameActive)
+            {
+                _isGameActive = false;
+                EventManager.LevelComplete();
             }
         }
 
